@@ -6,6 +6,9 @@ from discord.ext import commands
 
 #client = discord.Client() # Client instance
 intents = discord.Intents.default()
+intents.messages = True
+intents.guilds = True
+intents.voice_states = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 commandDict = {"?": "Private message", "!clear": "Clears all messages in the channel", "!join": "Joins the voice channel"}
 
@@ -48,12 +51,12 @@ async def on_message(message):
         
 # Disconnect from voice channel (Doesn't work)
 @bot.command()
-async def disconnect(ctx):
-    if ctx.voice_client is None:
-        await ctx.send("I'm not connected to a voice channel.")
-    else:
+async def leave(ctx):
+    if ctx.voice_client:
         await ctx.voice_client.disconnect()
-        await ctx.send("Disconnected from the voice channel.")
+        await ctx.send('Disconnected!')
+    else:
+        await ctx.send('I am not in a voice channel!')
 
 load_dotenv()
 # keep_alive()
