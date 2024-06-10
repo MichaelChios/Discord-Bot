@@ -10,36 +10,47 @@ intents.messages = True
 intents.guilds = True
 intents.voice_states = True
 bot = commands.Bot(command_prefix='!', intents=intents)
-commandDict = {"?": "Private message", "!clear": "Clears all messages in the channel", "!join": "Joins the voice channel"}
+commandDict = {"?": "Private message", "!clear": "Clears all messages in the channel", "!join": "Joins the voice channel", "!play <url>": "Plays music from the URL", "!help": "Displays all commands"}
 
 # Connection to the server
 @bot.event
 async def on_ready():
     print(f'I have logged in as {bot.user}')
 
-# Responding to messages
+# Respond to messages
 @bot.event
 async def on_message(message):
-    if message.author == bot.user:
+    if (message.author == bot.user):
         return
     
     # Private message
-    if message.content.startswith('?'):
+    if (message.content.startswith('?')):
         await message.author.send('Hello!')
     
-    # Clearing messages
-    elif message.content.startswith('!clear'):
+    # Clear messages
+    elif (message.content.startswith('!clear')):
         await message.channel.purge()
         await message.channel.send('Messages have been cleared!')
         
     # Join a voice channel
-    elif message.content.startswith('!join'):
+    elif (message.content.startswith('!join')):
         if (message.author.voice):
             channel = message.author.voice.channel
             await channel.connect()
         else:
             await message.channel.send('You are not in a voice channel!')
             
+    # Play music
+    elif (message.content.startswith('!play')):
+        if (message.author.voice):
+            channel = message.author.voice.channel
+            voice = await channel.connect()
+            url = message.content.split(' ')[1]
+            voice.play(discord.FFmpegPCMAudio(url))
+        else:
+            await message.channel.send('You are not in a voice channel!')
+    
+    # Help command    
     elif (message.content.startswith('!help')):
         await message.channel.send('Here are the commands you can use: ')
         for key, value in commandDict.items():
@@ -48,15 +59,6 @@ async def on_message(message):
     # General message
     else:
         await message.channel.send('Hello!')
-        
-# Disconnect from voice channel (Doesn't work)
-@bot.command()
-async def leave(ctx):
-    if ctx.voice_client:
-        await ctx.voice_client.disconnect()
-        await ctx.send('Disconnected!')
-    else:
-        await ctx.send('I am not in a voice channel!')
 
 load_dotenv()
 # keep_alive()
