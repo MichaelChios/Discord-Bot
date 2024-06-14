@@ -9,9 +9,10 @@ intents = discord.Intents.default()
 intents.messages = True
 intents.guilds = True
 intents.voice_states = True
+intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 commandDict = {"?": "Private message", "!clear": "Clears all messages in the channel", "!join": "Joins the voice channel", "!play <url>": "Plays music from the URL",
-               "!help": "Displays all commands"}
+               "!kick <@member>": "Kicks the tagged member", "!help": "Displays all commands"}
 
 # Connection to the server
 @bot.event
@@ -53,7 +54,7 @@ async def on_message(message):
         else:
             await message.channel.send('You are not in a voice channel!')
             
-    # Kick a member (Doesn't work)
+    # Kick a member
     elif (message.content.startswith('!kick')):
         if (message.author.guild_permissions.kick_members):
             member = message.mentions[0]
@@ -61,11 +62,6 @@ async def on_message(message):
             await message.channel.send(f'{member} has been kicked!')
         else:
             await message.channel.send('You do not have the permission to kick members!')
-            
-    # Show permissions
-    elif (message.content.startswith('!permissions')):
-        permissions = message.author.guild_permissions
-        await message.channel.send(f'{message.author} has the following permissions: {permissions}')
     
     # Help command    
     elif (message.content.startswith('!help')):
